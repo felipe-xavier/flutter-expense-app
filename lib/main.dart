@@ -1,5 +1,7 @@
-import 'package:expenses_app/transaction.dart';
+import 'package:expenses_app/widgets/new_transaction.dart';
+import './widgets/transactions_list.dart';
 import 'package:flutter/material.dart';
+import './models/transactions.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,7 +16,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'My Expenses'),
     );
   }
 }
@@ -29,20 +31,40 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<Transaction> transactions = [
+  final List<Transaction> _myTransactions = [
     Transaction(
       id: 't1',
-      title: 'new shoes',
+      title: 'New shoes',
       amount: 59.99,
       date: DateTime.now(),
     ),
     Transaction(
       id: 't2',
-      title: 'groceries',
+      title: 'Groceries',
       amount: 19.99,
       date: DateTime.now(),
     ),
   ];
+
+  void _addNewTransaction(String title, double amount) {
+    final txn = Transaction(
+      id: DateTime.now().toString(),
+      title: title,
+      amount: amount,
+      date: DateTime.now(),
+    );
+    setState(() {
+      _myTransactions.add(txn);
+    });
+  }
+
+  void _startAddNewTransaction(BuildContext ctx) {
+    showModalBottomSheet(
+        context: ctx,
+        builder: (_) {
+          return NewTransaction(_addNewTransaction);
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,45 +72,23 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Card(
-              child: Text('CHART CARD'),
-            ),
-            Column(
-              children: transactions.map((txn) {
-                return Card(
-                  child: Row(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.symmetric(
-                          vertical: 10,
-                          horizontal: 15,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.black,
-                            width: 2,
-                          ),
-                        ),
-                        padding: EdgeInsets.all(5),
-                        child: Text(txn.amount.toString()),
-                      ),
-                      Column(
-                        children: [
-                          Text(txn.title),
-                          Text(txn.date.toString()),
-                        ],
-                      )
-                    ],
-                  ),
-                );
-              }).toList(),
-            ),
-          ],
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Card(
+                child: Text('CHART CARD'),
+              ),
+              // UserTransaction(),
+              TransactionList(_myTransactions)
+            ],
+          ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () => _startAddNewTransaction(context),
       ),
     );
   }
