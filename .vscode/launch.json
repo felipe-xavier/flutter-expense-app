@@ -7,7 +7,25 @@
         {
             "name": "expenses_app",
             "request": "launch",
-            "type": "dart"
-        }
-    ]
+            "type": "dart",
+        },
+        {
+			"name": "Android",
+			"request": "launch",
+			"type": "dart",
+			"deviceId": "AOSP on IA Emulator"
+		},
+        {
+			"name": "iPhone",
+			"request": "launch",
+			"type": "dart",
+			"deviceId": "iphone"
+		},
+    ],
+    "compounds": [
+		{
+			"name": "All Devices",
+			"configurations": ["Android", "iPhone"],
+		}
+	]
 }
