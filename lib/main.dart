@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:expenses_app/widgets/chart.dart';
 import 'package:expenses_app/widgets/new_transaction.dart';
 import './widgets/transactions_list.dart';
 import 'package:flutter/material.dart';
@@ -66,15 +67,27 @@ class _MyHomePageState extends State<MyHomePage> {
     // ),
   ];
 
-  void _addNewTransaction(String title, double amount) {
+  List<Transaction> get _recentTransactions {
+    return _myTransactions.where((txn) {
+      return txn.date.isAfter(DateTime.now().subtract(Duration(days: 7)));
+    }).toList();
+  }
+
+  void _addNewTransaction(String title, double amount, DateTime selectedDate) {
     final txn = Transaction(
       id: DateTime.now().toString(),
       title: title,
       amount: amount,
-      date: DateTime.now(),
+      date: selectedDate,
     );
     setState(() {
       _myTransactions.add(txn);
+    });
+  }
+
+  void _deleteTransaction(String id) {
+    setState(() {
+      _myTransactions.removeWhere((txn) => txn.id == id);
     });
   }
 
@@ -93,17 +106,13 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Card(
-                child: Text('CHART CARD'),
-              ),
-              // UserTransaction(),
-              TransactionList(_myTransactions)
-            ],
-          ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Chart(_recentTransactions),
+            // UserTransaction(),
+            TransactionList(_myTransactions, _deleteTransaction)
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
